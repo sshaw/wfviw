@@ -1,32 +1,51 @@
-<% if @deploys.none? %>
-  <p>Nothing has been deployed; <strong>get to work</strong>!</p>
-<% else %>
-  <div>
-    <% if @environments.any? %>
-      <select name="env">	
-	<% @environments.each do |env| %>
-	  <option value="<%= env.id %>"><%= env.name %></option>
-	<% end %>
-      </select>
-    <% end %>
-  </div>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>WFVIW!?</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet"/>
+  </head>
+  <body>
+    <div class="container">
 
-  <table class="deployments table">
-    <thead>
-      <tr>
-	<th>Name</th>
-	<th>Version</th>
-	<th>Environment</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @deploys.each do |deploy| %>
-	<tr>
-	  <td><%= h deploy.name %></td>
-	  <td><%= h deploy.version %></td>
-	  <td><%= h deploy.environment.name %></td>
-	</tr>
+      <div>
+	<h1><abbr title="What Fucking Version is Where!?">WFVIW!?</abbr></h1>
+	<div>	
+	  <% if @environments.any? %>
+	    <select name="env">	
+	      <option>All Environments</option>
+	      <% @environments.each do |env| %>
+		<option value="<%= env.id %>"><%= env.name %></option>
+	      <% end %>
+	    </select>
+	  <% end %>
+	</div>
+      </div>
+
+      <% if @deploys.none? %>
+	<p>Nothing has been deployed; <strong>get to work</strong>!</p>
+      <% else %>
+	<table class="deployments table">
+	  <thead>
+	    <tr>
+	      <th>Name</th>
+	      <th>Version</th>
+	      <th>Environment</th>
+	    </tr>
+	  </thead>
+	  <tbody>
+	    <% @deploys.each do |deploy| %>
+	      <tr>
+		<td><%= h deploy.name %></td>
+		<td><%= h deploy.version %></td>
+		<td><%= h deploy.environment.name %></td>
+	      </tr>
+	    <% end %>
+	  </tbody>
+	</table>
       <% end %>
-    </tbody>
-  </table>
-<% end %>
+    </div>
+  </body>
+</html>

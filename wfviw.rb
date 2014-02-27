@@ -2,7 +2,7 @@ require "sinatra"
 require "sequel"
 require "json"
 
-abort "No DB connection given" unless ARGV[0]
+abort "DB connection string required" unless ARGV[0]
 
 DB = Sequel.connect(ARGV[0])
 DB.create_table? :environments do
@@ -15,7 +15,7 @@ DB.create_table? :deployments do
   String :version, :null => false
   String :hostname
   String :deployed_by
-  Time   :deployed_at  
+  Time   :deployed_at
   primary_key :id
   foreign_key :environment_id, :environments, :null => false
 end
@@ -40,17 +40,22 @@ helpers do
   end
 end
 
-post "/deploy/:id/delete" do 
+post "/deploy/:id/delete" do
   Deployment.where(:id => params[:id]).delete
   redirect to("/")
 end
 
 post "/deploy" do
-  #Enviornment.find_or_create(params.delete(:environment))
-  #deploy = Deployment.insert(params)    
+  Deployment.db.transaction do
+    Environment.find_or_create(params.delete(:environment))
+    Deployment.create(params)
+  end
+
+  201
 end
 
-get "/" do 
+get "/" do
+  p params
   @deploys = Deployment.latest.all
   @environments = Environment.all
   erb :index
