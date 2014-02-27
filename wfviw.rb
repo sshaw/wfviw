@@ -47,16 +47,18 @@ end
 
 post "/deploy" do
   Deployment.db.transaction do
-    Environment.find_or_create(params.delete(:environment))
-    Deployment.create(params)
+    env = params.delete("environment")
+    env = Environment.find_or_create(:name => env)
+    Deployment.create(params.merge(:environment_id => env.id))
   end
 
   201
 end
 
 get "/" do
-  p params
-  @deploys = Deployment.latest.all
+  rs = Deployment.latest
+  rs = rs.where(:environment_id => params["env"].to_i) if params["env"].to_i > 0
+  @deploys = rs.all
   @environments = Environment.all
   erb :index
 end

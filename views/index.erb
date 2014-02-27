@@ -9,7 +9,6 @@
   </head>
   <body>
     <div class="container">
-
       <div>
 	<h1><abbr title="What Fucking Version is Where!?">WFVIW!?</abbr></h1>
 	<div>	
@@ -17,7 +16,7 @@
 	    <select name="env">	
 	      <option>All Environments</option>
 	      <% @environments.each do |env| %>
-		<option value="<%= env.id %>"><%= env.name %></option>
+		<option value="<%= env.id %>" <%= "selected" if params["env"].to_i == env.id %>><%= env.name %></option>
 	      <% end %>
 	    </select>
 	  <% end %>
