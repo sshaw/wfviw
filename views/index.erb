@@ -1,0 +1,32 @@
+<% if @deploys.none? %>
+  <p>Nothing has been deployed; <strong>get to work</strong>!</p>
+<% else %>
+  <div>
+    <% if @environments.any? %>
+      <select name="env">	
+	<% @environments.each do |env| %>
+	  <option value="<%= env.id %>"><%= env.name %></option>
+	<% end %>
+      </select>
+    <% end %>
+  </div>
+
+  <table class="deployments table">
+    <thead>
+      <tr>
+	<th>Name</th>
+	<th>Version</th>
+	<th>Environment</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @deploys.each do |deploy| %>
+	<tr>
+	  <td><%= h deploy.name %></td>
+	  <td><%= h deploy.version %></td>
+	  <td><%= h deploy.environment.name %></td>
+	</tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
