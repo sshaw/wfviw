@@ -3,9 +3,7 @@ require "sequel"
 require "sequel/extensions/core_extensions" # for lit()
 require "json"
 
-abort "DB connection string required" unless ARGV[0]
-
-DB = Sequel.connect(ARGV[0])
+DB = Sequel.connect(ARGV.shift || "sqlite://deployments.db")
 DB.create_table? :environments do
   String :name, :null => false, :unique => true
   primary_key :id

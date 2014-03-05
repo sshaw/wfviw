@@ -25,3 +25,8 @@ Optional:
 
   * `hostname`
   * `deployed_by`
+
+## Other Ways to Track Deployments
+
+* https://github.com/mydrive/capistrano-deploytags
+* https://github.com/forward/capistrano-deploy-tagger
