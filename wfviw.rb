@@ -14,7 +14,7 @@ DB.create_table? :deployments do
   String :version, :null => false
   String :hostname
   String :deployed_by
-  Time   :deployed_at, :null => false, :default => Time.now
+  Time   :deployed_at, :null => false
 
   primary_key :id
   foreign_key :environment_id, :environments, :null => false
@@ -25,7 +25,7 @@ class Deployment < Sequel::Model
 
   dataset_module do
     def latest
-      eager(:environment).order(:environment_id, :name)
+      eager(:environment).select(:name, :version, :environment_id, :deployed_at).order(:environment_id, :name).group_by(:environment_id, :name)
     end
   end
 end
@@ -39,6 +39,7 @@ class DeployManager
     def latest(q = {})
       env = q["env"].to_i
       rs = Deployment.latest
+      p rs
       rs = rs.where(:environment_id => env) if env > 0
       rs.all
     end
@@ -63,7 +64,7 @@ class DeployManager
       attrs = attrs.dup
       Deployment.db.transaction do
         env = Environment.find_or_create(:name => attrs.delete("environment"))
-        Deployment.create(attrs.merge(:environment => env))
+        Deployment.create(attrs.merge(:environment => env, :deployed_at => Time.now))
       end
     end
 
