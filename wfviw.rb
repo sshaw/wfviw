@@ -14,7 +14,7 @@ DB.create_table? :deployments do
   String :version, :null => false
   String :hostname
   String :deployed_by
-  Time   :deployed_at, :null => false, :default => "datetime('now', 'localtime')".lit
+  Time   :deployed_at, :null => false, :default => Time.now
 
   primary_key :id
   foreign_key :environment_id, :environments, :null => false
