@@ -25,7 +25,7 @@ class Deployment < Sequel::Model
 
   dataset_module do
     def latest
-      eager(:environment).order(:environment_id, :name).group_by(:environment_id, :name)
+      eager(:environment).order(:environment_id, :name)
     end
   end
 end
