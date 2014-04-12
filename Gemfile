@@ -3,6 +3,8 @@ source "https://rubygems.org"
 
 gem "sinatra"
 gem "sequel"
+gem "dotenv"
+gem "thin"
 
 group :production do
   gem "pg"
