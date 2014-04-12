@@ -2,6 +2,9 @@ require "sinatra"
 require "sequel"
 require "sequel/extensions/core_extensions" # for lit()
 require "json"
+require "dotenv"
+
+Dotenv.load
 
 DB = Sequel.connect( ENV['DATABASE_URL'] || "sqlite://deployments.db")
 DB.create_table? :environments do
@@ -25,7 +28,7 @@ class Deployment < Sequel::Model
 
   dataset_module do
     def latest
-      eager(:environment).select(:name, :version, :environment_id, :deployed_at).order(:environment_id, :name).group_by(:environment_id, :name)
+      eager(:environment).select(:id, :name, :version, :environment_id, :deployed_at).order(:environment_id, :name)
     end
   end
 end
@@ -39,7 +42,6 @@ class DeployManager
     def latest(q = {})
       env = q["env"].to_i
       rs = Deployment.latest
-      p rs
       rs = rs.where(:environment_id => env) if env > 0
       rs.all
     end
@@ -64,6 +66,7 @@ class DeployManager
       attrs = attrs.dup
       Deployment.db.transaction do
         env = Environment.find_or_create(:name => attrs.delete("environment"))
+        Deployment.where(:environment_id => env[:id], :name => attrs["name"] ).delete
         Deployment.create(attrs.merge(:environment => env, :deployed_at => Time.now))
       end
     end
@@ -82,8 +85,7 @@ end
 
 post "/deploy/:id/delete" do
   DeployManager.delete(params[:id])
-  #redirect to("/")
-  200
+  redirect to("/")
 end
 
 post "/deploy" do
