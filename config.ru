@@ -1,7 +1,7 @@
 require './wfviw'
 
 use Rack::Auth::Basic, "Restricted Area" do |username, password|
-    [username, password] == ['admin', 'admin']
+    [username, password] == [ENV['USER'], ENV['PASSWORD']]
 end
 
 run Sinatra::Application
