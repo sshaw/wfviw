@@ -20,8 +20,8 @@ class WFVIWTest < MiniTest::Unit::TestCase
     assert_equal 201, last_response.status
 
     get '/'
-    assert_match "Labs", last_response.body
-    assert_match "cms", last_response.body
+    assert_match "Labs",  last_response.body
+    assert_match "cms",   last_response.body
     assert_match "215.3", last_response.body
     DB << "delete from deployments" << "delete from environments"
   end
@@ -29,8 +29,8 @@ class WFVIWTest < MiniTest::Unit::TestCase
   def test_updated_deployment
     post("/deploy?environment=Labs&name=cms&version=215.3")
     get '/'
-    assert_match "Labs", last_response.body
-    assert_match "cms", last_response.body
+    assert_match "Labs",  last_response.body
+    assert_match "cms",   last_response.body
     assert_match "215.3", last_response.body
 
     post("/deploy?environment=Labs&name=cms&version=216.2")
@@ -43,5 +43,21 @@ class WFVIWTest < MiniTest::Unit::TestCase
 
     DB << "delete from deployments" << "delete from environments"
   end
+
+  def test_deletion
+    post("/deploy?environment=Labs&name=cms&version=215.3")
+    get '/'
+    assert_match "Labs",  last_response.body
+    assert_match "cms",   last_response.body
+    assert_match "215.3", last_response.body
+
+    get '/deploy/1/delete'
+    refute_match "Labs",  last_response.body
+    refute_match "cms",   last_response.body
+    refute_match "215.3", last_response.body
+
+    DB << "delete from deployments" << "delete from environments"
+  end
+
 
 end
