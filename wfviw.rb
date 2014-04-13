@@ -4,9 +4,11 @@ require "sequel/extensions/core_extensions" # for lit()
 require "json"
 require "dotenv"
 
-Dotenv.load
+Dotenv.load(
+  File.expand_path("../.#{ENV['RACK_ENV']}.env", __FILE__),
+  File.expand_path("../.env",  __FILE__))
 
-DB = Sequel.connect( ENV['DATABASE_URL'] || "sqlite://deployments.db")
+DB = Sequel.connect ENV['DATABASE_URL']
 DB.create_table? :environments do
   String :name, :null => false, :unique => true
   primary_key :id
