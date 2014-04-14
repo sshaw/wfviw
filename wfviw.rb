@@ -2,8 +2,13 @@ require "sinatra"
 require "sequel"
 require "sequel/extensions/core_extensions" # for lit()
 require "json"
+require "dotenv"
 
-DB = Sequel.connect(ARGV.shift || "sqlite://deployments.db")
+Dotenv.load(
+  File.expand_path("../.#{ENV['RACK_ENV']}.env", __FILE__),
+  File.expand_path("../.env",  __FILE__))
+
+DB = Sequel.connect ENV['DATABASE_URL']
 DB.create_table? :environments do
   String :name, :null => false, :unique => true
   primary_key :id
@@ -14,7 +19,7 @@ DB.create_table? :deployments do
   String :version, :null => false
   String :hostname
   String :deployed_by
-  Time   :deployed_at, :null => false, :default => "datetime('now', 'localtime')".lit
+  Time   :deployed_at, :null => false
 
   primary_key :id
   foreign_key :environment_id, :environments, :null => false
@@ -25,7 +30,7 @@ class Deployment < Sequel::Model
 
   dataset_module do
     def latest
-      eager(:environment).order(:environment_id, :name).group_by(:environment_id, :name).having { max(id) }
+      eager(:environment).select(:id, :name, :version, :environment_id, :deployed_at).order(:environment_id, :name)
     end
   end
 end
@@ -63,7 +68,8 @@ class DeployManager
       attrs = attrs.dup
       Deployment.db.transaction do
         env = Environment.find_or_create(:name => attrs.delete("environment"))
-        Deployment.create(attrs.merge(:environment => env))
+        Deployment.where(:environment_id => env[:id], :name => attrs["name"] ).delete
+        Deployment.create(attrs.merge(:environment => env, :deployed_at => Time.now))
       end
     end
 
@@ -81,8 +87,7 @@ end
 
 post "/deploy/:id/delete" do
   DeployManager.delete(params[:id])
-  #redirect to("/")
-  200
+  redirect to("/")
 end
 
 post "/deploy" do
