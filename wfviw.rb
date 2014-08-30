@@ -3,7 +3,7 @@ require "sequel"
 require "sequel/extensions/core_extensions" # for lit()
 require "json"
 
-DB = Sequel.connect(ARGV.shift || "sqlite://deployments.db")
+DB = Sequel.connect(ARGV.shift || ENV["DATABASE_URL"] || "sqlite://deployments.db")
 DB.create_table? :environments do
   String :name, :null => false, :unique => true
   primary_key :id
