@@ -40,8 +40,16 @@ class DeployManager
   class << self
     def latest(q = {})
       env = q["env"].to_i
+      col = q["col"]
+      sort = q["sort"]
       rs = Deployment.latest
       rs = rs.where(:environment_id => env) if env > 0
+
+      if col then
+        cols = sort == "asc" ? Sequel.asc(col.to_sym) : Sequel.desc(col.to_sym)
+        rs = rs.order(cols)
+      end
+
       rs.all
     end
 

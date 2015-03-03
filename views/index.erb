@@ -44,13 +44,15 @@
       <% if @deploys.none? %>
         <p class="text-center">Nothing has been deployed &mdash;<strong>get to work</strong>!</p>
       <% else %>
+      <% env = params[:env] if params[:env].to_i > 0 %>
+      <% sort = params[:sort] == "asc" ? "desc" : "asc" %>
         <table class="table table-hover deployments">
           <thead>
             <tr>
               <th>Name</th>
               <th>Version</th>
-              <th>Environment</th>
-              <th>Deployed</th>
+              <th><a class="sort" href="/?env=<%= env%>&col=environment_id&sort=<%= sort%>">Environment</a></th>
+              <th><a class="sort" href="/?env=<%= env%>&col=deployed_at&sort=<%= sort%>">Deployed</a></th>
             </tr>
           </thead>
           <tbody>
@@ -61,7 +63,7 @@
                 <td><%= h deploy.environment.name %></td>
                 <td>
                   <%= h deploy.deployed_at.strftime("%F %R") %>
-                  <a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete" class="small pull-right">Delete</a>
+                  <a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete">Delete</a>
                 </td>
               </tr>
             <% end %>
