@@ -24,13 +24,6 @@ end
 
 class Deployment < Sequel::Model
   many_to_one :environment
-
-  dataset_module do
-    #TODO Either delete this or refactor it to order by environment name.
-    def latest
-      eager(:environment).order(:environment_id, :name).group_by(:environment_id, :name).having { max(id) }
-    end
-  end
 end
 
 class Environment < Sequel::Model
@@ -39,7 +32,6 @@ end
 
 class DeployManager
   class << self
-    # TODO - Get rid of anything that is no longer being used.
     def version(q = {})
       env = q["env"].to_i
       rs = Deployment
