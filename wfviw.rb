@@ -24,6 +24,12 @@ end
 
 class Deployment < Sequel::Model
   many_to_one :environment
+
+  dataset_module do
+    def latest
+      eager(:environment).order(:environment_id, :name).group_by(:environment_id, :name).having { max(id) }
+    end
+  end
 end
 
 class Environment < Sequel::Model
@@ -32,7 +38,14 @@ end
 
 class DeployManager
   class << self
-    def version(q = {})
+    def latest(q = {})
+      env = q["env"].to_i
+      rs = Deployment.latest
+      rs = rs.where(:environment_id => env) if env > 0
+      rs.all
+    end
+
+    def deploy_history(q = {})
       env = q["env"].to_i
       rs = Deployment
       rs = rs.where(:environment_id => env) if env > 0
@@ -87,8 +100,8 @@ post "/deploy" do
 end
 
 get "/" do
-  #TODO - Make sure this gels with the refactered version method above.
-  @deploys      = DeployManager.version(params)
+  @deploys  = DeployManager.latest(params)
+  @deployment_history = DeployManager.deploy_history(params)
   @environments = DeployManager.environments
   erb :index
 end
