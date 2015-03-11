@@ -46,13 +46,14 @@
       <% else %>
       <% env = params[:env] if params[:env].to_i > 0 %>
       <% sort = params[:sort] == "asc" ? "desc" : "asc" %>
+      <% sym = params[:sort] == "asc" ? "&darr;" : "&uarr;" %>
         <table class="table table-hover deployments">
           <thead>
             <tr>
               <th>Name</th>
               <th>Version</th>
-              <th><a class="sort" href="/?env=<%= env%>&col=environment_id&sort=<%= sort%>">Environment</a></th>
-              <th><a class="sort" href="/?env=<%= env%>&col=deployed_at&sort=<%= sort%>">Deployed</a></th>
+              <th><a class="sort" href="/?env=<%= env%>&col=environment_id&sort=<%= sort%> ">Environment <%= sym%></a></th>
+              <th><a class="sort" href="/?env=<%= env%>&col=deployed_at&sort=<%= sort%>">Deployed <%= sym%></a></th>
             </tr>
           </thead>
           <tbody>
