@@ -48,9 +48,10 @@
           <thead>
             <tr>
               <th>Name</th>
-              <th>Version</th>
+              <th>Current Version</th>
               <th>Environment</th>
               <th>Deployed</th>
+              <th>Version History</th>
             </tr>
           </thead>
           <tbody>
@@ -59,10 +60,13 @@
                 <td><%= h deploy.name %></td>
                 <td><%= h deploy.version %></td>
                 <td><%= h deploy.environment.name %></td>
+                <td><%= h deploy.deployed_at.strftime("%F %R") %></td>
                 <td>
-                  <%= h deploy.deployed_at.strftime("%F %R") %>
-                  <a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete" class="small pull-right">Delete</a>
+                  <% @deployment_history.each do |history| %>
+                    <p><%= history.name + " " + history.version %></p>
+                  <% end %>
                 </td>
+                <td><a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete" class="small pull-right">Delete</a></td>
               </tr>
             <% end %>
           </tbody>
