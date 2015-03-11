@@ -45,12 +45,15 @@ class DeployManager
       rs = Deployment.latest
       rs = rs.where(:environment_id => env) if env > 0
 
-      if col then
-        cols = sort == "asc" ? Sequel.asc(col.to_sym) : Sequel.desc(col.to_sym)
-        rs = rs.order(cols)
+      if col
+        rs = sort_column(rs, col, sort)
       end
-
       rs.all
+    end
+
+    def sort_column(rs, col, sort)
+      cols = sort == "asc" ? Sequel.asc(col.to_sym) : Sequel.desc(col.to_sym)
+      rs.order(cols)
     end
 
     def list(q = {})
