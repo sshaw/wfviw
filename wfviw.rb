@@ -29,10 +29,6 @@ class Deployment < Sequel::Model
     def latest
       eager(:environment).order(:environment_id, :name).group_by(:environment_id, :name).having { max(id) }
     end
-    def version_grouping
-      eager(:environment).group_by(:environment_id, :version).where(:name == :name)
-    end
-
   end
 end
 
@@ -51,8 +47,12 @@ class DeployManager
 
     def deploy_history(q = {})
       env = q["env"].to_i
-      rs = Deployment.version_grouping
+      rs = Deployment
       rs = rs.where(:environment_id => env) if env > 0
+      names = rs.map { |deployment| deployment.name }.uniq
+
+      names.each { |deployment_name| puts deployment_name }
+      #rs = rs.where(:environment_id => env, :name => name) if env > 0
       rs.all
     end
 

@@ -66,7 +66,7 @@
                 <td><%= h deploy.deployed_at.strftime("%F %R") %></td>
                 <td>
                   <% @deployment_history.each do |history| %>
-                    <p><%= history.name + " " + history.version %></p>
+                    <p><%= history.name + " " + history.version + "<br /><b>Deployed:</b> " + history.deployed_at.strftime("%F %R")%></p>
                   <% end %>
                 </td>
                 <td><a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete" class="small pull-right">Delete</a></td>
