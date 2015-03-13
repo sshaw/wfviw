@@ -54,7 +54,7 @@ class DeployManager
       names = rs.map { |deployment| deployment.name }.uniq
 
       # Store deployment names along with their indivdual version histories in a hash.
-      deploy_versions_per_name = Hash.new
+      deploy_versions_per_name = {}
       names.each do |deployment_name|
         rs.each do |deploy_object|
           if deploy_object.name == deployment_name
@@ -63,7 +63,7 @@ class DeployManager
           end
         end
       end
-      rs.all
+      deploy_versions_per_name
     end
 
     def list(q = {})
