@@ -38,44 +38,31 @@ end
 
 class DeployManager
   class << self
+    # Latest deployment version.
     def latest(q = {})
       env = q["env"].to_i
       rs = Deployment.latest
       rs = rs.where(:environment_id => env) if env > 0
       rs.all
     end
-
+    # Version history for each deployment.
     def deploy_history(q = {})
       env = q["env"].to_i
       rs = Deployment
       rs = rs.where(:environment_id => env) if env > 0
+      # Instantiate an array of unique deplyment names.
       names = rs.map { |deployment| deployment.name }.uniq
-      # version = rs.map { |deployment| deployment.version }
 
-      #### START HERE #######
-      deploy_versions_name = Hash.new
+      # Store deployment names along with their indivdual version histories in a hash.
+      deploy_versions_per_name = Hash.new
       names.each do |deployment_name|
         rs.each do |deploy_object|
           if deploy_object.name == deployment_name
-            deploy_versions_name[deployment_name] ||= []
-            deploy_versions_name[deployment_name] << deploy_object.version
+            deploy_versions_per_name[deployment_name] ||= []
+            deploy_versions_per_name[deployment_name] << deploy_object.version
           end
         end
       end
-      puts "#{deploy_versions_name.inspect}"
-
-
-       #rs = rs.where(:environment_id => env) if env > 0
-
-       #test = rs.select(:version).where(:name => deployment_name)
-
-        #uts test.all
-        #deploy_versions = {deployment_name => deployment_name}
-        #puts deploy_versions
-      #end
-      #rs.each do |deploy_object|
-      #end
-      #rs = rs.where(:environment_id => env, :name => name) if env > 0
       rs.all
     end
 
