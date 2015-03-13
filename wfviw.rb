@@ -50,8 +50,31 @@ class DeployManager
       rs = Deployment
       rs = rs.where(:environment_id => env) if env > 0
       names = rs.map { |deployment| deployment.name }.uniq
+      # version = rs.map { |deployment| deployment.version }
 
-      names.each { |deployment_name| puts deployment_name }
+      #### START HERE #######
+      deploy_versions_name = Hash.new
+      names.each do |deployment_name|
+        rs.each do |deploy_object|
+          if deploy_object.name == deployment_name
+            deploy_versions_name[deployment_name] ||= []
+            deploy_versions_name[deployment_name] << deploy_object.version
+          end
+        end
+      end
+      puts "#{deploy_versions_name.inspect}"
+
+
+       #rs = rs.where(:environment_id => env) if env > 0
+
+       #test = rs.select(:version).where(:name => deployment_name)
+
+        #uts test.all
+        #deploy_versions = {deployment_name => deployment_name}
+        #puts deploy_versions
+      #end
+      #rs.each do |deploy_object|
+      #end
       #rs = rs.where(:environment_id => env, :name => name) if env > 0
       rs.all
     end
