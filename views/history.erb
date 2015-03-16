@@ -44,28 +44,24 @@
       <% if @deploys.none? %>
         <p class="text-center">Nothing has been deployed &mdash;<strong>get to work</strong>!</p>
       <% else %>
-        <a href="http://google.com">View environment deployment history</a>
         <table class="table table-hover deployments">
           <thead>
             <tr>
               <th>Name</th>
-              <th>Current Version</th>
+              <th>Version</th>
               <th>Environment</th>
               <th>Deployed</th>
               <th>Version History</th>
             </tr>
           </thead>
           <tbody>
-             <% @deployment_history.each do |history| %>
-               <p><%= history.name + " " + history.version %></p>
-            <% end %>
-            <% @deploys.each do |deploy| %>
+            <% @deployment_history.each do |history| %>
               <tr class="deployment">
-                <td><%= h deploy.name %></td>
-                <td><%= h deploy.version %></td>
-                <td><%= h deploy.environment.name %></td>
-                <td><%= h deploy.deployed_at.strftime("%F %R") %></td>
-                <td><a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete" class="small pull-right">Delete</a></td>
+                <td><%= h history.name %></td>
+                <td><%= h history.version %></td>
+                <td><%= h history.environment.name %></td>
+                <td><%= h history.deployed_at.strftime("%F %R") %></td>
+                <td><a class="delete pull-right small" href="/deploy/<%= history.id %>/delete" class="small pull-right">Delete</a></td>
               </tr>
             <% end %>
           </tbody>

@@ -50,20 +50,6 @@ class DeployManager
       env = q["env"].to_i
       rs = Deployment
       rs = rs.where(:environment_id => env) if env > 0
-      # Instantiate an array of unique deplyment names.
-      names = rs.map { |deployment| deployment.name }.uniq
-
-      # Store deployment names along with their indivdual version histories in a hash.
-      deploy_versions_per_name = {}
-      names.each do |deployment_name|
-        rs.each do |deploy_object|
-          if deploy_object.name == deployment_name
-            deploy_versions_per_name[deployment_name] ||= []
-            deploy_versions_per_name[deployment_name] << deploy_object.version
-          end
-        end
-      end
-      deploy_versions_per_name
     end
 
     def list(q = {})
@@ -111,6 +97,19 @@ end
 post "/deploy" do
   DeployManager.create(params)
   201
+end
+
+post "/history" do
+  DeployManager.create(params)
+  201
+end
+
+
+get  "/history" do
+  @deploys = DeployManager.latest(params)
+  @deployment_history = DeployManager.deploy_history(params)
+  @environments = DeployManager.environments
+  erb :history
 end
 
 get "/" do
