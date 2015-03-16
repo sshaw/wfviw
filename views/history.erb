@@ -41,8 +41,8 @@
         <% end %>
       </div>
 
-      <% if @deploys.none? %>
-        <p class="text-center">Nothing has been deployed &mdash;<strong>get to work</strong>!</p>
+      <% if @deployment_history.none? %>
+        <p class="text-center"><h2>There is currently no deployment history for this environment.</h2></p>
       <% else %>
         <table class="table table-hover deployments">
           <thead>
