@@ -44,7 +44,7 @@
       <% if @deploys.none? %>
         <p class="text-center">Nothing has been deployed &mdash;<strong>get to work</strong>!</p>
       <% else %>
-        <a href="http://google.com">View environment deployment history</a>
+        <a href="<%= 'history?env=' + params["env"] %>">View deployment history for this environment</a>
         <table class="table table-hover deployments">
           <thead>
             <tr>
@@ -52,7 +52,6 @@
               <th>Current Version</th>
               <th>Environment</th>
               <th>Deployed</th>
-              <th>Version History</th>
             </tr>
           </thead>
           <tbody>
