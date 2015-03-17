@@ -80,6 +80,13 @@ class DeployManager
     def environments
       Environment.all
     end
+
+    def environment_links(q = {})
+      env = q["env"].to_i
+      env_link = Deployment
+      env_link = Environment.where(:id => env)
+      env_link.all
+    end
   end
 end
 
@@ -109,6 +116,7 @@ end
 get  "/history" do
   @deployment_history = DeployManager.deploy_history(params)
   @environments = DeployManager.environments
+  @links = DeployManager.environment_links(params)
   erb :history
 end
 
@@ -116,5 +124,6 @@ get "/" do
   @deploys = DeployManager.latest(params)
   @deployment_history = DeployManager.deploy_history(params)
   @environments = DeployManager.environments
+  @links = DeployManager.environment_links(params)
   erb :index
 end
