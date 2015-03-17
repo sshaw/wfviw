@@ -90,6 +90,20 @@ helpers do
   def h(text)
     Rack::Utils.escape_html(text)
   end
+
+  def sort_col(name, url, col, options = {})
+    params[:env] ||= ""
+    params[:sort] ||= "asc"
+    params[:col] ||= "environment_id"
+
+    env = ERB::Util.url_encode(params[:env]) if params[:env].to_i > 0
+    sort = ERB::Util.url_encode(params[:sort]) == "asc" ? "desc" : "asc"
+    sym = ERB::Util.url_encode(params[:sort]) == "asc" ? "&darr;" : "&uarr;"
+    href = url + '?env=' + env.to_s + '&col=' + params[:col] + '&sort=' + sort
+    link = '<a href="' + href + '" class="sort-column">' + name + '</a> ' + sym
+
+    link
+  end
 end
 
 post "/deploy/:id/delete" do

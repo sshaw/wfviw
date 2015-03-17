@@ -44,16 +44,13 @@
       <% if @deploys.none? %>
         <p class="text-center">Nothing has been deployed &mdash;<strong>get to work</strong>!</p>
       <% else %>
-      <% env = ERB::Util.url_encode(params[:env]) if params[:env].to_i > 0 %>
-      <% sort = ERB::Util.url_encode(params[:sort]) == "asc" ? "desc" : "asc" %>
-      <% sym = ERB::Util.url_encode(params[:sort]) == "asc" ? "&darr;" : "&uarr;" %>
         <table class="table table-hover deployments">
           <thead>
             <tr>
               <th>Name</th>
               <th>Version</th>
-              <th><a class="sort" href="/?env=<%= env%>&col=environment_id&sort=<%= sort%> ">Environment <%= sym%></a></th>
-              <th><a class="sort" href="/?env=<%= env%>&col=deployed_at&sort=<%= sort%>">Deployed <%= sym%></a></th>
+              <th><%= sort_col "Environment Id", "/", "environment_id" %></th>
+              <th><%= sort_col "Deployed at", "/", "deployed_at" %></th>
             </tr>
           </thead>
           <tbody>
