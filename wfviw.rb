@@ -40,8 +40,8 @@ class DeployManager
   class << self
     def latest(q = {})
       env = q["env"].to_i
-      col = q["col"]
-      sort = q["sort"]
+      col = ERB::Util.url_encode(q["col"]) unless q["col"].nil?
+      sort = ERB::Util.url_encode(q["sort"])  unless q["sort"].nil?
       rs = Deployment.latest
       rs = rs.where(:environment_id => env) if env > 0
 
@@ -94,12 +94,12 @@ helpers do
   def sort_col(name, url, col, options = {})
     params[:env] ||= ""
     params[:sort] ||= "asc"
-    params[:col] ||= "environment_id"
 
     env = ERB::Util.url_encode(params[:env]) if params[:env].to_i > 0
     sort = ERB::Util.url_encode(params[:sort]) == "asc" ? "desc" : "asc"
     sym = ERB::Util.url_encode(params[:sort]) == "asc" ? "&darr;" : "&uarr;"
-    href = url + '?env=' + env.to_s + '&col=' + params[:col] + '&sort=' + sort
+    col = ERB::Util.url_encode(col)
+    href = url + '?env=' + env.to_s + '&col=' + col + '&sort=' + sort
     link = '<a href="' + href + '" class="sort-column">' + name + '</a> ' + sym
 
     link
