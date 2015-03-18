@@ -29,48 +29,32 @@
     <div class="container">
       <div class="page-header">
         <h1><abbr title="What Fucking Version is Where!?">WFVIW!?</abbr></h1>
-          <% @links.each do |env_link_title| %>
-           <h3><%= 'Current ' + env_link_title.name.capitalize + ' Deployments'%></h3>
-        <% end %>
-        <% if @environments.any? %>
-          <form action="/">
-            <select name="env">
-              <option value="">All Environments</option>
-              <% @environments.each do |env| %>
-                <option value="<%= env.id %>" <%= "selected" if params["env"].to_i == env.id %>><%= env.name %></option>
-              <% end %>
-            </select>
-          </form>
+        <% @links.each do |env_link_title| %>
+           <h3><%= env_link_title.name.capitalize + ' Deployment History'%></h3>
         <% end %>
       </div>
 
-      <% if @deploys.none? %>
-        <p class="text-center">Nothing has been deployed &mdash;<strong>get to work</strong>!</p>
+      <% if @deployment_history.none? %>
+        <p class="text-center"><h2>There is currently no deployment history for this environment.</h2></p>
       <% else %>
         <% @links.each do |env_link_title| %>
-          <a href="<%= '/history?env=' + params["env"] %>"><%=  env_link_title.name.capitalize + ' Deployment History &raquo;'%></a>
+          <a href="<%= '/?env=' + params["env"] %>"><%= '&laquo; Current ' + env_link_title.name.capitalize + ' Deployments' %></a>
         <% end %>
         <table class="table table-hover deployments">
           <thead>
             <tr>
               <th>Name</th>
-              <th> Current Version</th>
-              <% if params["env"] == "" || !params["env"] %>
-                <th><%= sort_col "Environment", "/", "environment_id" %></th>
-                <th><%= sort_col "Deployed", "/", "deployed_at" %></th>
-              <% end %>
+              <th>Version</th>
+              <th>Deployed</th>
             </tr>
           </thead>
           <tbody>
-            <% @deploys.each do |deploy| %>
+            <% @deployment_history.each do |history| %>
               <tr class="deployment">
-                <td><%= h deploy.name %></td>
-                <td><%= h deploy.version %></td>
-                <% if params["env"].to_s.empty? %>
-		  <td><%= h deploy.environment.name %></td>
-                <% end %>
-		<td><%= h deploy.deployed_at.strftime("%F %R") %></td>
-                <td><a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete" class="small pull-right">Delete</a></td>
+                <td><%= h history.name %></td>
+                <td><%= h history.version %></td>
+                <td><%= h history.deployed_at.strftime("%F %R") %></td>
+                <td><a class="delete pull-right small" href="/deploy/<%= history.id %>/delete" class="small pull-right">Delete</a></td>
               </tr>
             <% end %>
           </tbody>

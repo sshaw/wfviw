@@ -26,8 +26,13 @@ class Deployment < Sequel::Model
   many_to_one :environment
 
   dataset_module do
+
     def latest
       eager(:environment).order(:environment_id, :name).group_by(:environment_id, :name).having { max(id) }
+    end
+
+    def history_order_by_version
+      eager(:environment).order(:version, :name).group_by(:environment_id, :name).having { max(id) }
     end
   end
 end
@@ -38,6 +43,7 @@ end
 
 class DeployManager
   class << self
+    # Latest deployment version.
     def latest(q = {})
       env = q["env"].to_i
       col = ERB::Util.url_encode(q["col"]) unless q["col"].nil?
@@ -54,6 +60,14 @@ class DeployManager
     def sort_column(rs, col, sort)
       cols = sort == "asc" ? Sequel.asc(col.to_sym) : Sequel.desc(col.to_sym)
       rs.order(cols)
+    end
+
+    # Version history for each deployment.
+    def deploy_history(q = {})
+      env = q["env"].to_i
+      rs = Deployment.history_order_by_version
+      rs = rs.where(:environment_id => env) if env > 0
+      rs.all
     end
 
     def list(q = {})
@@ -82,6 +96,13 @@ class DeployManager
 
     def environments
       Environment.all
+    end
+
+    def environment_links(q = {})
+      env = q["env"].to_i
+      env_link = Deployment
+      env_link = Environment.where(:id => env)
+      env_link.all
     end
   end
 end
@@ -117,8 +138,22 @@ post "/deploy" do
   201
 end
 
-get "/" do
-  @deploys      = DeployManager.latest(params)
+post "/history" do
+  DeployManager.create(params)
+  201
+end
+
+get  "/history" do
+  @deployment_history = DeployManager.deploy_history(params)
   @environments = DeployManager.environments
+  @links = DeployManager.environment_links(params)
+  erb :history
+end
+
+get "/" do
+  @deploys = DeployManager.latest(params)
+  @deployment_history = DeployManager.deploy_history(params)
+  @environments = DeployManager.environments
+  @links = DeployManager.environment_links(params)
   erb :index
 end
