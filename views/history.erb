@@ -29,13 +29,16 @@
     <div class="container">
       <div class="page-header">
         <h1><abbr title="What Fucking Version is Where!?">WFVIW!?</abbr></h1>
+        <% @links.each do |env_link_title| %>
+           <h3><%= env_link_title.name.capitalize + ' Deployment History'%></h3>
+        <% end %>
       </div>
 
       <% if @deployment_history.none? %>
         <p class="text-center"><h2>There is currently no deployment history for this environment.</h2></p>
       <% else %>
         <% @links.each do |env_link_title| %>
-          <a href="<%= '/?env=' + params["env"] %>"><%= '&laquo; Current ' + env_link_title.name + ' deployments' %></a>
+          <a href="<%= '/?env=' + params["env"] %>"><%= '&laquo; Current ' + env_link_title.name.capitalize + ' Deployments' %></a>
         <% end %>
         <table class="table table-hover deployments">
           <thead>
