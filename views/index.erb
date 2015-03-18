@@ -62,9 +62,6 @@
             </tr>
           </thead>
           <tbody>
-             <% @deployment_history.each do |history| %>
-               <p><%= history.name + " " + history.version %></p>
-            <% end %>
             <% @deploys.each do |deploy| %>
               <tr class="deployment">
                 <td><%= h deploy.name %></td>
