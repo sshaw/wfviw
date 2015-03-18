@@ -55,7 +55,9 @@
             <tr>
               <th>Name</th>
               <th>Current Version</th>
-              <th>Environment</th>
+              <% if params["env"] == "" %>
+	        <th>Environment</th>
+              <% end %>
               <th>Deployed</th>
             </tr>
           </thead>
@@ -67,9 +69,10 @@
               <tr class="deployment">
                 <td><%= h deploy.name %></td>
                 <td><%= h deploy.version %></td>
-                 <% #TODO Fix this so it works on All Environments page. %>
-                <td><%= h deploy.environment.name %></td>
-                <td><%= h deploy.deployed_at.strftime("%F %R") %></td>
+                <% if params["env"].to_s.empty? %>
+		  <td><%= h deploy.environment.name %></td>
+                <% end %>
+		<td><%= h deploy.deployed_at.strftime("%F %R") %></td>
                 <td><a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete" class="small pull-right">Delete</a></td>
               </tr>
             <% end %>
