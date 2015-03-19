@@ -57,8 +57,8 @@
               <th> Current Version</th>
               <% if params["env"] == "" || !params["env"] %>
                 <th><%= sort_col "Environment", "/", "environment_id" %></th>
-                <th><%= sort_col "Deployed", "/", "deployed_at" %></th>
               <% end %>
+                <th><%= sort_col "Deployed", "/", "deployed_at" %></th>
             </tr>
           </thead>
           <tbody>
