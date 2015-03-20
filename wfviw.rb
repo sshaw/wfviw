@@ -1,11 +1,11 @@
-require "sinatra"
-require "sequel"
-require "sequel/extensions/core_extensions" # for lit()
-require "json"
+require 'sinatra'
+require 'sequel'
+require 'sequel/extensions/core_extensions' # for lit()
+require 'json'
 
-VERSION = "0.0.2"
+VERSION = '0.0.2'
 
-DB = Sequel.connect(ARGV.shift || ENV["DATABASE_URL"] || "sqlite://deployments.db")
+DB = Sequel.connect(ARGV.shift || ENV['DATABASE_URL'] || 'sqlite://deployments.db')
 DB.create_table? :environments do
   String :name, :null => false, :unique => true
   primary_key :id
@@ -45,9 +45,9 @@ class DeployManager
   class << self
     # Latest deployment version.
     def latest(q = {})
-      env = q["env"].to_i
-      col = ERB::Util.url_encode(q["col"]) unless q["col"].nil?
-      sort = ERB::Util.url_encode(q["sort"])  unless q["sort"].nil?
+      env = q['env'].to_i
+      col = ERB::Util.url_encode(q['col']) unless q['col'].nil?
+      sort = ERB::Util.url_encode(q['sort'])  unless q['sort'].nil?
       rs = Deployment.latest
       rs = rs.where(:environment_id => env) if env > 0
 
@@ -58,13 +58,13 @@ class DeployManager
     end
 
     def sort_column(rs, col, sort)
-      cols = sort == "asc" ? Sequel.asc(col.to_sym) : Sequel.desc(col.to_sym)
+      cols = sort == 'asc' ? Sequel.asc(col.to_sym) : Sequel.desc(col.to_sym)
       rs.order(cols)
     end
 
     # Version history for each deployment.
     def deploy_history(q = {})
-      env = q["env"].to_i
+      env = q['env'].to_i
       rs = Deployment.history_order_by_version
       rs = rs.where(:environment_id => env) if env > 0
       rs.all
@@ -89,7 +89,7 @@ class DeployManager
     def create(attrs)
       attrs = attrs.dup
       Deployment.db.transaction do
-        env = Environment.find_or_create(:name => attrs.delete("environment"))
+        env = Environment.find_or_create(:name => attrs.delete('environment'))
         Deployment.create(attrs.merge(:environment => env))
       end
     end
@@ -99,7 +99,7 @@ class DeployManager
     end
 
     def environment_links(q = {})
-      env = q["env"].to_i
+      env = q['env'].to_i
       env_link = Deployment
       env_link = Environment.where(:id => env)
       env_link.all
@@ -113,13 +113,14 @@ helpers do
   end
 
   def sort_col(name, url, col, options = {})
-    params[:env] ||= ""
-    params[:sort] ||= "asc"
+    params[:env] ||= ''
+    params[:sort] ||= 'asc'
 
     env = ERB::Util.url_encode(params[:env]) if params[:env].to_i > 0
-    sort = ERB::Util.url_encode(params[:sort]) == "asc" ? "desc" : "asc"
-    sym = ERB::Util.url_encode(params[:sort]) == "asc" ? "&darr;" : "&uarr;"
+    sort = ERB::Util.url_encode(params[:sort]) == 'asc' ? 'desc' : 'asc'
+    sym = ERB::Util.url_encode(params[:sort]) == 'asc' ? '&darr;' : '&uarr;'
     col = ERB::Util.url_encode(col)
+    # TODO CREATE A VERSION OF THIS FOR HISTORY BASED ON HISTORY BEING FOUND IN THE URL PATH.
     href = url + '?env=' + env.to_s + '&col=' + col + '&sort=' + sort
     link = '<a href="' + href + '" class="sort-column">' + name + '</a> ' + sym
 
@@ -127,30 +128,30 @@ helpers do
   end
 end
 
-post "/deploy/:id/delete" do
+post '/deploy/:id/delete' do
   DeployManager.delete(params[:id])
-  #redirect to("/")
+  # redirect to('/')
   200
 end
 
-post "/deploy" do
+post '/deploy' do
   DeployManager.create(params)
   201
 end
 
-post "/history" do
+post '/history' do
   DeployManager.create(params)
   201
 end
 
-get  "/history" do
+get '/history' do
   @deployment_history = DeployManager.deploy_history(params)
   @environments = DeployManager.environments
   @links = DeployManager.environment_links(params)
   erb :history
 end
 
-get "/" do
+get '/' do
   @deploys = DeployManager.latest(params)
   @deployment_history = DeployManager.deploy_history(params)
   @environments = DeployManager.environments
