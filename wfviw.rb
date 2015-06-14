@@ -16,10 +16,11 @@ DB.create_table? :deployments do
   String :version, :null => false
   String :hostname
   String :deployed_by
-  Time   :deployed_at, :null => false, :default => "datetime('now', 'localtime')".lit
+  Time   :deployed_at, :null => false
 
   primary_key :id
   foreign_key :environment_id, :environments, :null => false
+  index [:environment_id, :name]
 end
 
 class Deployment < Sequel::Model
@@ -27,8 +28,14 @@ class Deployment < Sequel::Model
 
   dataset_module do
     def latest
-      eager(:environment).order(:environment_id, :name).group_by(:environment_id, :name).having { max(id) }
+      eager(:environment).where(:id => select { max(:id) }.group_by(:environment_id, :name))
     end
+  end
+
+  private
+
+  def before_create
+    self.deployed_at = Time.now
   end
 end
 
