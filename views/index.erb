@@ -49,8 +49,8 @@
             <tr>
               <th>Name</th>
               <th>Version</th>
-              <th>Environment</th>
-              <th>Deployed</th>
+              <th><%= sort_col "Environment Id", "/", "environment_id" %></th>
+              <th><%= sort_col "Deployed at", "/", "deployed_at" %></th>
             </tr>
           </thead>
           <tbody>
@@ -61,7 +61,7 @@
                 <td><%= h deploy.environment.name %></td>
                 <td>
                   <%= h deploy.deployed_at.strftime("%F %R") %>
-                  <a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete" class="small pull-right">Delete</a>
+                  <a class="delete pull-right small" href="/deploy/<%= deploy.id %>/delete">Delete</a>
                 </td>
               </tr>
             <% end %>

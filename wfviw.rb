@@ -47,9 +47,20 @@ class DeployManager
   class << self
     def latest(q = {})
       env = q["env"].to_i
+      col = ERB::Util.url_encode(q["col"]) unless q["col"].nil?
+      sort = ERB::Util.url_encode(q["sort"])  unless q["sort"].nil?
       rs = Deployment.latest
       rs = rs.where(:environment_id => env) if env > 0
+
+      if col
+        rs = sort_column(rs, col, sort)
+      end
       rs.all
+    end
+
+    def sort_column(rs, col, sort)
+      cols = sort == "asc" ? Sequel.asc(col.to_sym) : Sequel.desc(col.to_sym)
+      rs.order(cols)
     end
 
     def list(q = {})
@@ -85,6 +96,20 @@ end
 helpers do
   def h(text)
     Rack::Utils.escape_html(text)
+  end
+
+  def sort_col(name, url, col, options = {})
+    params[:env] ||= ""
+    params[:sort] ||= "asc"
+
+    env = ERB::Util.url_encode(params[:env]) if params[:env].to_i > 0
+    sort = ERB::Util.url_encode(params[:sort]) == "asc" ? "desc" : "asc"
+    sym = ERB::Util.url_encode(params[:sort]) == "asc" ? "&darr;" : "&uarr;"
+    col = ERB::Util.url_encode(col)
+    href = url + '?env=' + env.to_s + '&col=' + col + '&sort=' + sort
+    link = '<a href="' + href + '" class="sort-column">' + name + '</a> ' + sym
+
+    link
   end
 end
 
