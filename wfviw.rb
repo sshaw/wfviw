@@ -52,6 +52,13 @@ class DeployManager
       rs.all
     end
 
+    def deploy_history(q = {})
+      env = q["env"].to_i
+      rs = Deployment
+      rs = rs.where(:environment_id => env) if env > 0
+      rs.all
+    end
+
     def list(q = {})
       q = q.dup
       page = q.delete(:page).to_i
@@ -100,7 +107,8 @@ post "/deploy" do
 end
 
 get "/" do
-  @deploys      = DeployManager.latest(params)
+  @deploys  = DeployManager.latest(params)
+  @deployment_history = DeployManager.deploy_history(params)
   @environments = DeployManager.environments
   erb :index
 end
